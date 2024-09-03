@@ -5,7 +5,7 @@
 CameraBase::CameraBase()
 {
 	//初始化各成员变量
-	this->imageData = new uint8_t[picWidth * picHeight * sizeof(uint8_t)];
+	this->imageData = new uint16_t[picWidth * picHeight * sizeof(uint16_t)];
 	this->exposureTime = 10;
 	this->frameNum = 0;
 	this->camOperaStatus = CameraStatus::Normal;

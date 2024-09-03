@@ -23,7 +23,7 @@ public:
 	 * @date     2024/9/1
 	 * @param    int argc, char** argv
 	 */
-	virtual void AutoDo(int argc, char* argv[]) = 0;
+	virtual bool AutoDo(int argc, char* argv[]) = 0;
 
 	/**
 	 * @brief    显示相机信息
@@ -57,9 +57,9 @@ public:
 	 * @author   yangshuhao
 	 * @date     2024/9/1
 	 * @param    void
-	 * @return   bool::false-程序错误 true-显示正确
+	 * @return   uint16_t * 照片地址
 	 */
-	virtual bool returnCapturedImage() = 0;
+	virtual uint16_t* returnCapturedImage() = 0;
 
 	/**
 	 * @brief    外部获取相机运行状态的方法
@@ -71,9 +71,9 @@ public:
 	CameraStatus getCamStatus();
 
 protected:
-	uint8_t*  imageData;      //拍摄得到的图片
-	uint32_t  exposureTime;   //相机的曝光时间
-	uint64_t  frameNum;       //拍摄帧数
+	uint16_t*  imageData;      //拍摄得到的图片 16bit原始图像
+	uint32_t   exposureTime;   //相机的曝光时间
+	uint64_t   frameNum;       //拍摄帧数
 
 	CameraStatus camOperaStatus;      //相机运行状态
 };

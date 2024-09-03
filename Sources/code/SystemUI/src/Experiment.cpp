@@ -31,11 +31,15 @@ void Experiment::matTest()
 void Experiment::pvcamTest(int argc, char* argv[])
 {
 	CameraBase* cam = new CameraMoment;
-	cam->AutoDo(argc, argv);
-	CamErrOccr(cam->getCamStatus());
 
-	delete cam;
-	std::cout << "pvcamTest" << std::endl;
+	//当初始化相机失败，就调用接口查看失败原因
+	if(!cam->AutoDo(argc, argv))
+		CamErrOccr(cam->getCamStatus());
+
+	while (true)
+	{
+
+	}
 }
 
 void Experiment::CamErrOccr(CameraStatus status)
