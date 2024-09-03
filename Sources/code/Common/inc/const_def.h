@@ -21,11 +21,7 @@ enum class CameraStatus
 {
 	Normal,                  //正常初始化状态
 	ShowInfoFailed,          //SDK信息查询状态
-	ShowInfoSuccess,
 	InitCamFailed,           //初始化状态
-	InitCameSuccess,
 	BeginGrabFrameFailed,    //开始抓取图像砖状态
-	BeginGrabFrameSuccess,
-	GrabFrameFailed,         //抓取图像状态
-	GrabFrameSuccess
+	GrabFrameFailed          //抓取图像状态
 };

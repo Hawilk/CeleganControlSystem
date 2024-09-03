@@ -21,8 +21,6 @@ public:
 	Experiment(int argc, char* argv[]);
 	~Experiment();
 
-	void print();
-	void matTest();
 	void pvcamTest(int argc, char* argv[]);
 	void CamErrOccr(CameraStatus status);
 

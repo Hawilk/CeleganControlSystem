@@ -2,9 +2,9 @@
 
 int main(int argc, char* argv[])
 {
-    Experiment exp;
+    Experiment exp(argc, argv);
 
-    exp.pvcamTest(argc, argv);
+    //exp.pvcamTest(argc, argv);
 
     return 0;
 }

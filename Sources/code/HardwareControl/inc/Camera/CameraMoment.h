@@ -22,7 +22,7 @@ public:
 	//自动化过程
 	bool AutoDo(int argc, char* argv[]) override;
 
-	//返回一张拍摄的照片
+	//返回一张拍摄的照片 使用该内存推荐深拷贝
 	uint16_t* returnCapturedImage() override;
 
 private:

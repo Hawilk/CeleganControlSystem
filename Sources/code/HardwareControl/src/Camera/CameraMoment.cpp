@@ -24,7 +24,9 @@ CameraMoment::~CameraMoment()
 	}
 
 	g_periodicTimerActive = false;
-	delete[] circBufferInMemory;
+
+	if(circBufferInMemory != nullptr)
+		delete[] circBufferInMemory;
 
 	if (context != nullptr)
 	{
@@ -34,16 +36,9 @@ CameraMoment::~CameraMoment()
 
 bool CameraMoment::AutoDo(int argc, char* argv[])
 {
-	//检查SDK运行状态
-	if (!showCameraInformation(argc, argv))
-		return CAM_ERR;
-
-	//初始化相机句柄，找到相机
-	if (!initCameraData())
-		return CAM_ERR;
-
-	//相机开始拍照
-	if (!beginGrabFrames())
+	if (!showCameraInformation(argc, argv) ||
+		!initCameraData() ||
+		!beginGrabFrames())
 		return CAM_ERR;
 
 	return CAM_SUC;
@@ -57,7 +52,6 @@ bool CameraMoment::showCameraInformation(int argc, char* argv[])
 		return CAM_ERR;
 	}
 
-	this->camOperaStatus = CameraStatus::ShowInfoSuccess;
 	return CAM_SUC;
 }
 
@@ -68,11 +62,9 @@ bool CameraMoment::initCameraData()
 		this->camOperaStatus = CameraStatus::InitCamFailed;
 		return CAM_ERR;
 	}
-
-	//取出找到的相机句柄
 	this->context = contexts.at(cSingleCamIndex);
 
-	//给相机句柄安装 ctrl + c 按键
+	//给相机列表安装 ctrl + c 按键
 	if (!InstallGenericCliTerminationHandler(contexts))
 	{
 		CloseAllCamerasAndUninit(contexts);
@@ -87,14 +79,12 @@ bool CameraMoment::initCameraData()
 		return CAM_ERR;
 	}
 
-	this->camOperaStatus = CameraStatus::InitCameSuccess;
 	return CAM_SUC;
 }
 
 bool CameraMoment::beginGrabFrames()
 {
 	//此处可以参考Pvcam SDK示例代码 设定虚拟触发器实现拍照
-
 	const int16 selectedExposureMode = EXT_TRIG_SOFTWARE_EDGE;
 
 	NVPC supportedExposeOutModes;
@@ -140,8 +130,6 @@ bool CameraMoment::beginGrabFrames()
 		delete[] circBufferInMemory;
 		return CAM_ERR;
 	}
-
-	//开启虚拟触发器 进行连续曝光
 	PeriodicTimerStart();
 
 	return CAM_SUC;
