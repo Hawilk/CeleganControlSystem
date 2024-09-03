@@ -18,6 +18,7 @@ class Experiment
 {
 public:
 	Experiment();
+	Experiment(int argc, char* argv[]);
 	~Experiment();
 
 	void print();
@@ -26,5 +27,6 @@ public:
 	void CamErrOccr(CameraStatus status);
 
 private:
-
+	CameraBase*  m_Cam;         //Moment相机
+	std::thread  m_CamThread;   //拍摄线程（处理图像）
 };

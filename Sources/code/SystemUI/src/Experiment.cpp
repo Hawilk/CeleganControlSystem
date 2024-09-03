@@ -1,5 +1,14 @@
 #include "Experiment.h"
 
+Experiment::Experiment(int argc, char* argv[])
+{
+	//初始化相机
+	m_Cam = new CameraMoment;
+	if (!m_Cam->AutoDo(argc, argv))
+		CamErrOccr(m_Cam->getCamStatus());
+
+}
+
 Experiment::Experiment()
 {
 
@@ -7,7 +16,8 @@ Experiment::Experiment()
 
 Experiment::~Experiment()
 {
-
+	if (!m_Cam->isNull())
+		delete m_Cam;
 }
 
 void Experiment::print()
@@ -35,11 +45,6 @@ void Experiment::pvcamTest(int argc, char* argv[])
 	//当初始化相机失败，就调用接口查看失败原因
 	if(!cam->AutoDo(argc, argv))
 		CamErrOccr(cam->getCamStatus());
-
-	while (true)
-	{
-
-	}
 }
 
 void Experiment::CamErrOccr(CameraStatus status)

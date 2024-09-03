@@ -21,3 +21,8 @@ CameraStatus CameraBase::getCamStatus()
 {
 	return this->camOperaStatus;
 }
+
+bool CameraBase::isNull()
+{
+	return this == nullptr;
+}

@@ -653,9 +653,6 @@ void CloseAllCamerasAndUninit(std::vector<CameraContext*>& contexts)
     }
 
     UninitPVCAM(contexts);
-
-    printf("\nPress <Enter> to exit");
-    WaitForEnter();
 }
 
 void PV_DECL GenericEofHandler(FRAME_INFO* pFrameInfo, void* pContext)

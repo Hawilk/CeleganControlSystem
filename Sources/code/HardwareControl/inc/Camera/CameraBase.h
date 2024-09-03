@@ -70,6 +70,15 @@ public:
 	 */
 	CameraStatus getCamStatus();
 
+	/**
+	 * @brief    获取判断当前指针是否为空的方法
+	 * @author   yangshuhao
+	 * @date     2024/9/3
+	 * @param    void
+	 * @return   true 当前实例存在  false实例不存在
+	 */
+	bool isNull();
+
 protected:
 	uint16_t*  imageData;      //拍摄得到的图片 16bit原始图像
 	uint32_t   exposureTime;   //相机的曝光时间

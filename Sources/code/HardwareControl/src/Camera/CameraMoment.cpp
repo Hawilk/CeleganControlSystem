@@ -18,11 +18,17 @@ CameraMoment::CameraMoment()
 
 CameraMoment::~CameraMoment()
 {
+	if (PV_OK == pl_exp_abort(context->hcam, CCS_HALT))
+	{
+		std::cout << "Acquisition stopped on camera " << context->hcam << std::endl;
+	}
+
+	g_periodicTimerActive = false;
+	delete[] circBufferInMemory;
+
 	if (context != nullptr)
 	{
-		//关闭相机，并关闭PVCAM（仅适用于一个相机情况）
-		CloseCamera(context);
-		UninitPVCAM(contexts);
+		CloseAllCamerasAndUninit(contexts);
 	}
 }
 
