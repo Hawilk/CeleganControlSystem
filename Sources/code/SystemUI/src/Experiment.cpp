@@ -16,7 +16,8 @@ Experiment::Experiment()
 
 Experiment::~Experiment()
 {
-
+	if (m_Cam != nullptr)
+		delete m_Cam;
 }
 
 void Experiment::pvcamTest(int argc, char* argv[])
