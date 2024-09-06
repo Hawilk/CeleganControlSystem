@@ -10,9 +10,9 @@
 #pragma once
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "hello.h"
 #include "CameraBase.h"
 #include "CameraMoment.h"
+#include "StagePws.h"
 
 class Experiment
 {
@@ -23,6 +23,7 @@ public:
 
 	void pvcamTest(int argc, char* argv[]);
 	void CamErrOccr(CameraStatus status);
+	void stageTest(int com);
 
 private:
 	CameraBase*  m_Cam;         //MomentÏà»ú

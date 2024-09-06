@@ -50,6 +50,7 @@ target_include_directories(
       "${${TARGET_NAME}_SOURCE_DIR}/inc"
       "${${TARGET_NAME}_SOURCE_DIR}/inc/Camera"
       "${${TARGET_NAME}_SOURCE_DIR}/inc/Stage"
+      "${EXTERNAL}/PwsStage/inc"
       "${OpenCV_INCLUDE_DIRS}"
 )
 
@@ -58,4 +59,6 @@ target_link_libraries(${TARGET_NAME}
     PUBLIC  ${OpenCV_LIBS}
     PUBLIC  ${PROJECT_NAME}::Common
     PUBLIC  ${PROJECT_NAME}::PVCam
+    PUBLIC  ${EXTERNAL}/PwsStage/lib/SLS_Dll.lib
+    #PUBLIC  ${EXTERNAL}/PwsStage/lib/SLS_Dll.dll
 )

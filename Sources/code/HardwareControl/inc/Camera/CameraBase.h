@@ -80,9 +80,9 @@ public:
 	bool isNull();
 
 protected:
-	uint16_t*  imageData;      //拍摄得到的图片 16bit原始图像
-	uint32_t   exposureTime;   //相机的曝光时间
-	uint64_t   frameNum;       //拍摄帧数
+	uint16_t*    imageData;       //拍摄得到的图片 16bit原始图像
+	uint32_t     exposureTime;    //相机的曝光时间
+	uint64_t     frameNum;        //拍摄帧数
 
-	CameraStatus camOperaStatus;      //相机运行状态
+	CameraStatus camOperaStatus;  //相机运行状态
 };

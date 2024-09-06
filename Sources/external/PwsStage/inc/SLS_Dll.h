@@ -1,7 +1,7 @@
 #ifdef SLS_DLL_EXPORTS
-#define SLS_DLL_API extern "C"_declspec(dllexport)
+#define SLS_DLL_API extern "C" _declspec(dllexport)
 #else
-#define SLS_DLL_API extern "C"_declspec(dllimport)
+#define SLS_DLL_API extern "C" _declspec(dllimport)
 #endif
 
 /********m_handle为串口句柄 m_Axis表示运动轴ID*******/

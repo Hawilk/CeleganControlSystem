@@ -57,3 +57,15 @@ void Experiment::CamErrOccr(CameraStatus status)
 		break;
 	}
 }
+
+void Experiment::stageTest(int com)
+{
+	StageBase* m_stage = new StagePws(com);
+
+	auto pos = std::make_pair(static_cast<double>(10), static_cast<double>(10));
+	m_stage->AutoDo(pos);
+	auto newpos = m_stage->getStagePosition();
+	std::cout << newpos.first << " : " << newpos.second << std::endl;
+
+	delete m_stage;
+}

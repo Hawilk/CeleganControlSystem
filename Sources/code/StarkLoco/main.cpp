@@ -4,7 +4,7 @@ int main(int argc, char* argv[])
 {
     Experiment exp(argc, argv);
 
-    //exp.pvcamTest(argc, argv);
+    exp.stageTest(3);
 
     return 0;
 }
