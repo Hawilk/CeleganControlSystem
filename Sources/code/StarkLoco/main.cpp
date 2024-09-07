@@ -2,9 +2,9 @@
 
 int main(int argc, char* argv[])
 {
-    Experiment exp(argc, argv);
+    ExperimentPtr exp = std::make_unique<Experiment>(argc, argv);
 
-    exp.stageTest(3);
+    //exp->pvcamTest();
 
     return 0;
 }

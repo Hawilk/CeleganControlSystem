@@ -22,16 +22,18 @@ CameraMoment::~CameraMoment()
 	{
 		//先关闭曝光线程
 		g_periodicTimerActive = false;
+		g_periodicTimerThread.join();
 
 		if (PV_OK == pl_exp_abort(context->hcam, CCS_HALT))
 		{
 			std::cout << "Acquisition stopped on camera " << context->hcam << std::endl;
 		}
 	}
-	CloseAllCamerasAndUninit(contexts);
 
 	if(circBufferInMemory != nullptr)
 		delete[] circBufferInMemory;
+
+	CloseAllCamerasAndUninit(contexts);
 }
 
 bool CameraMoment::AutoDo(int argc, char* argv[])

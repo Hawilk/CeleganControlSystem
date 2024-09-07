@@ -21,11 +21,14 @@ public:
 	Experiment(int argc, char* argv[]);
 	~Experiment();
 
-	void pvcamTest(int argc, char* argv[]);
+	void pvcamTest();
 	void CamErrOccr(CameraStatus status);
 	void stageTest(int com);
 
 private:
+	cv::Mat m_image;    //exp内部原始图像
+
 	CameraBase*  m_Cam;         //Moment相机
 	std::thread  m_CamThread;   //拍摄线程（处理图像）
 };
+typedef std::unique_ptr<Experiment> ExperimentPtr;

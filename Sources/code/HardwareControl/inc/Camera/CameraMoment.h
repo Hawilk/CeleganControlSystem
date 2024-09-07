@@ -56,3 +56,4 @@ private:
 	bool          g_periodicTimerActive;  //触发器激活状态
 	std::thread   g_periodicTimerThread;  //触发器线程
 };
+typedef std::shared_ptr<CameraMoment> CameraMomentPtr;

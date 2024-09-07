@@ -10,6 +10,7 @@
 #pragma once
 #include <const_def.h>
 #include <stdint.h>
+#include <memory>
 #include <opencv2/opencv.hpp>
 
 class StageBase
@@ -48,3 +49,4 @@ protected:
 
 	StageStatus  m_Status;      //位移台准备状态
 };
+typedef std::shared_ptr<StageBase*> StageBasePtr;

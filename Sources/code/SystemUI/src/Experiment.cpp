@@ -20,13 +20,16 @@ Experiment::~Experiment()
 		delete m_Cam;
 }
 
-void Experiment::pvcamTest(int argc, char* argv[])
+void Experiment::pvcamTest()
 {
-	CameraBase* cam = new CameraMoment;
+	uint16_t* image = new uint16_t[picWidth * picHeight];
+	std::memcpy(image, m_Cam->returnCapturedImage(), picWidth * picHeight * sizeof(uint16_t));
 
-	//当初始化相机失败，就调用接口查看失败原因
-	if(!cam->AutoDo(argc, argv))
-		CamErrOccr(cam->getCamStatus());
+	m_image = cv::Mat(picHeight, picWidth, CV_16UC1, image);
+	m_image.convertTo(m_image, CV_8UC1, 255.0 / 65535.0);
+
+	cv::imshow("1", m_image);
+	cv::waitKey(0);
 }
 
 void Experiment::CamErrOccr(CameraStatus status)

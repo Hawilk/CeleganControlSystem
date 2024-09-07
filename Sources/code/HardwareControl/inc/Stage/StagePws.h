@@ -53,3 +53,4 @@ public:
 private:
 	int handle;   //Î»ÒÆÌ¨¾ä±ú
 };
+typedef std::shared_ptr<StagePws> StagePwsPtr;

@@ -10,6 +10,7 @@
 #pragma once
 #include "const_def.h"
 #include <stdint.h>
+#include <memory>
 
 class CameraBase
 {
@@ -86,3 +87,4 @@ protected:
 
 	CameraStatus camOperaStatus;  //相机运行状态
 };
+typedef std::shared_ptr<CameraBase> CameraBasePtr;
