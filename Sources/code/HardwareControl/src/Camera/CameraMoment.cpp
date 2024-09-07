@@ -146,8 +146,18 @@ uint16_t* CameraMoment::returnCapturedImage()
 	//取出内存中的照片
 	const uns16* pBuffer = reinterpret_cast<const uns16*>(context->eofFrame);
 
+	std::cout << "========pBuffer===========" << std::endl;
+	for (int i = 0; i < 5; i++)
+	{
+		std::cout << pBuffer[i] << std::endl;
+	}
+	std::cout << "==========================" << std::endl;
+
 	//深拷贝一份地址的内存 返回给外部接口 提供照片地址
-	std::memcpy(imageData, pBuffer, sizeof(imageData));
+	uint64_t size = picWidth * picHeight * sizeof(uint16_t);
+	std::memcpy(imageData, pBuffer, size);
+	//imageData = pBuffer;
+	std::cout << "sizeof : " << size << std::endl;
 
 	return imageData;
 }

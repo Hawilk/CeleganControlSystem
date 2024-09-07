@@ -2,11 +2,8 @@
 
 Experiment::Experiment(int argc, char* argv[])
 {
-	//初始化相机
-	m_Cam = new CameraMoment;
-	if (!m_Cam->AutoDo(argc, argv))
-		CamErrOccr(m_Cam->getCamStatus());
-
+	m_argc = argc;
+	m_argv = argv;
 }
 
 Experiment::Experiment()
@@ -16,8 +13,44 @@ Experiment::Experiment()
 
 Experiment::~Experiment()
 {
-	if (m_Cam != nullptr)
-		delete m_Cam;
+
+}
+
+void Experiment::AutoDo()
+{
+	if (!InitCamera())
+	{
+		return;
+	}
+
+	pvcamTest();
+}
+
+bool Experiment::InitCamera()
+{
+	m_Cam = std::make_shared<CameraMoment>();
+	if (!m_Cam->AutoDo(m_argc, m_argv))
+	{
+		CamErrOccr(m_Cam->getCamStatus());
+		return EXP_ERR;
+	}
+
+	return EXP_SUC;
+}
+
+void Experiment::imageProcessing()
+{
+	cam_threadActive = true;
+	while (cam_threadActive)
+	{
+		uint16_t* image = new uint16_t[picWidth * picHeight];
+		std::memcpy(image, m_Cam->returnCapturedImage(), picWidth * picHeight * sizeof(uint16_t));
+	}
+}
+
+bool Experiment::InitStage()
+{
+	return true;
 }
 
 void Experiment::pvcamTest()
@@ -25,10 +58,15 @@ void Experiment::pvcamTest()
 	uint16_t* image = new uint16_t[picWidth * picHeight];
 	std::memcpy(image, m_Cam->returnCapturedImage(), picWidth * picHeight * sizeof(uint16_t));
 
-	m_image = cv::Mat(picHeight, picWidth, CV_16UC1, image);
-	m_image.convertTo(m_image, CV_8UC1, 255.0 / 65535.0);
+	for (int i = 0; i < 5; i++)
+	{
+		std::cout << image[i] << std::endl;
+	}
 
-	cv::imshow("1", m_image);
+	m_image_16bit = cv::Mat(picHeight, picWidth, CV_16UC1, image);
+	m_image_16bit.convertTo(m_image_8bit, CV_8UC1, 255.0 / 65535.0);
+
+	cv::imshow("1", m_image_8bit);
 	cv::waitKey(0);
 }
 

@@ -22,6 +22,9 @@
 #define  STAGE_ERR      false     //位移台错误提示
 #define  STAGE_SUC      true
 
+#define  EXP_ERR        false     //实验错误提示
+#define  EXP_SUC        true
+
 //相机状态
 enum class CameraStatus
 {
