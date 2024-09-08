@@ -36,7 +36,8 @@ void StagePws::AutoDo(std::pair<double, double>& disp)
 	moveStageAxisXandY(disp);
 	waitStageMove();
 
-	setPointZero();
+	//Bug - 此处设为原点会导致外部无法查询位移台实际准确状态
+	//setPointZero();
 
 	m_Status = StageStatus::Normal;
 }
@@ -51,7 +52,7 @@ void StagePws::InitCoordinates()
 	std::cout << Pos.first << " : " << Pos.second << std::endl;
 }
 
-void StagePws::moveStageByDirection(Direction& dir, double& disp)
+void StagePws::moveStageByDirection(Direction dir, double& disp)
 {
 	int axis = axisX;
 	double displacement = 0;

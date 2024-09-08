@@ -24,7 +24,7 @@ public:
 	void InitCoordinates();
 
 	//将位移台根据方位和偏移量移动
-	void moveStageByDirection(Direction& dir, double& disp) override;
+	void moveStageByDirection(Direction dir, double& disp) override;
 
 	//将位移台根据偏移量移动
 	void moveStageAxisXandY(std::pair<double, double>& disp) override;

@@ -180,7 +180,7 @@ void CameraMoment::PeriodicTimerStart()
 					printf("SW Trigger #%u ignored (triggering too fast?)\n", triggerCount);
 					break;
 				case PL_SW_TRIG_STATUS_TRIGGERED:
-					printf("SW Trigger #%u accepted\n", triggerCount);
+					//printf("SW Trigger #%u accepted\n", triggerCount);
 					break;
 				default:
 					printf("SW Trigger #%u: Unknown status\n", triggerCount);

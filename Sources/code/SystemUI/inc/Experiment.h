@@ -31,9 +31,6 @@ public:
 	//类功能启动入口
 	void AutoDo();
 
-	//初始化位移台
-	bool InitStage();
-
 	void pvcamTest();
 	void CamErrOccr(CameraStatus status);
 	void stageTest(int com);
@@ -54,6 +51,21 @@ private:
 
 	//等待相机线程启动
 	void waitCamThreadStart();
+
+	//关闭相机线程
+	void stopCamThread();
+
+	//初始化位移台
+	bool InitStage();
+
+	//位移台移动线程内部
+	void stageDisplacing();
+
+	//等待位移台线程启动
+	void waitStageThreadStart();
+
+	//关闭位移台线程
+	void stopStageThread();
 
 	/************** 类内部成员变量 *************/
 private:

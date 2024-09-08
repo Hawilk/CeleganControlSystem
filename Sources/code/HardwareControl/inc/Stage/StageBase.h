@@ -26,7 +26,7 @@ public:
 	virtual void InitCoordinates() = 0;
 
 	//将位移台根据方位和偏移量移动
-	virtual void moveStageByDirection(Direction& dir, double& disp) = 0;
+	virtual void moveStageByDirection(Direction dir, double& disp) = 0;
 
 	//将位移台根据偏移量移动
 	virtual void moveStageAxisXandY(std::pair<double, double>& disp) = 0;
