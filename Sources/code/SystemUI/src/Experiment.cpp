@@ -155,7 +155,7 @@ void Experiment::stopStageThread()
 void Experiment::pvcamTest()
 {
 	std::pair<double, double> item;
-	//while (cam_threadActive && stage_threadActive)
+
 	int i = 0;
 	while(true)
 	{
@@ -194,6 +194,7 @@ void Experiment::pvcamTest()
 		}
 	}
 
+	item = m_Stage->getStagePosition();
 	panelParam.initialPos_x = item.first;
 	panelParam.initialPos_y = item.second;
 }
