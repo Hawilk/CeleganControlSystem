@@ -49,4 +49,4 @@ protected:
 
 	StageStatus  m_Status;      //位移台准备状态
 };
-typedef std::shared_ptr<StageBase*> StageBasePtr;
+typedef std::shared_ptr<StageBase> StageBasePtr;

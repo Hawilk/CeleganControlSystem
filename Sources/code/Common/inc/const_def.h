@@ -8,6 +8,7 @@
  */
 
 #pragma once
+#include <string>
 
 #define  picWidth       1600      //图片宽度
 #define  picHeight      1100      //图片高度
@@ -50,3 +51,6 @@ enum class Direction
 	Left,                    //左
 	Right                    //右
 };
+
+/**************** 字符常量定义区 ********************/
+const std::string configName = "PanelParameters.ini";

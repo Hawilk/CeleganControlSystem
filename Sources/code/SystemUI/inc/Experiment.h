@@ -18,10 +18,11 @@
 #include "CameraMoment.h"
 #include "StagePws.h"
 #include "commonAlgorithm.h"
+#include "Parameters.h"
 
 class Experiment
 {
-	/*************类外部接口**************/
+	/*************** 类外部接口 ****************/
 public:
 	Experiment();
 	Experiment(int argc, char* argv[]);
@@ -37,8 +38,14 @@ public:
 	void CamErrOccr(CameraStatus status);
 	void stageTest(int com);
 
-	/*************类内部实现**************/
+	/*************** 类内部实现 ****************/
 private:  
+	//加载控制面板参数
+	void InitPanelParam();
+
+	//保存控制面板参数
+	void SavePanelParam();
+
 	//初始化相机
 	bool InitCamera();
 
@@ -48,6 +55,7 @@ private:
 	//等待相机线程启动
 	void waitCamThreadStart();
 
+	/************** 类内部成员变量 *************/
 private:
 	cv::Mat        m_image_16bit; //内部原始图像(16位深）
 	cv::Mat        m_image_8bit;  //显示图像(8位深）
@@ -61,8 +69,18 @@ private:
 	std::atomic<bool>  stage_threadActive;//位移台线程状态
 	std::mutex     image_mtx;     //图片加锁
 
+	std::map<std::string, std::string> Data; //配置文件参数 原始数据
+
+	struct PanelParam
+	{
+		double  initialPos_x;   //初始位置
+		double  initialPos_y;
+	}panelParam;
+
+	/************** 类内部系统变量 *************/
 private:
 	int     m_argc;
 	char**  m_argv;
+	int     m_com;     //位移台端口号
 };
 typedef std::unique_ptr<Experiment> ExperimentPtr;
