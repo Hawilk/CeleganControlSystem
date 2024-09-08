@@ -21,7 +21,7 @@ public:
 	 * @date     2024/9/7
 	 * @param    uint8_t* dst- 目标图像，uint16_t* image-待处理的图像
 	 */
-	void histogramEqualization(uint8_t* dst, uint16_t* image, std::pair<uint16_t, uint16_t>& extrema);
+	static void histogramEqualization(uint8_t* dst, uint16_t* image, std::pair<uint16_t, uint16_t>& extrema);
 
 	/**
 	 * @brief    找到16位深图像上最大和最小像素值
@@ -30,5 +30,5 @@ public:
 	 * @param    uint16_t* image-待处理的图像
 	 * @return   pair first-最小值，second-最大值
 	 */
-	std::pair<uint16_t, uint16_t> findExtremaInImage(const uint16_t* image);
+	static std::pair<uint16_t, uint16_t> findExtremaInImage(uint16_t* image);
 };

@@ -9,6 +9,7 @@ CameraBase::CameraBase()
 	this->exposureTime = 10;
 	this->frameNum = 0;
 	this->camOperaStatus = CameraStatus::Normal;
+	this->imageSize = picHeight * picWidth * sizeof(uint16_t);
 }
 
 CameraBase::~CameraBase()

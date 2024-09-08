@@ -10,25 +10,25 @@
 #pragma once
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "CameraBase.h"
+#include <atomic>
+#include <chrono>
+#include <thread>
+#include <mutex>
+
 #include "CameraMoment.h"
 #include "StagePws.h"
 #include "commonAlgorithm.h"
 
 class Experiment
 {
+	/*************类外部接口**************/
 public:
 	Experiment();
 	Experiment(int argc, char* argv[]);
 	~Experiment();
 
+	//类功能启动入口
 	void AutoDo();
-
-	//初始化相机
-	bool InitCamera();
-
-	//图像处理线程内部
-	void imageProcessing();
 
 	//初始化位移台
 	bool InitStage();
@@ -36,6 +36,17 @@ public:
 	void pvcamTest();
 	void CamErrOccr(CameraStatus status);
 	void stageTest(int com);
+
+	/*************类内部实现**************/
+private:  
+	//初始化相机
+	bool InitCamera();
+
+	//图像处理线程内部
+	void imageProcessing();
+
+	//等待相机线程启动
+	void waitCamThreadStart();
 
 private:
 	cv::Mat        m_image_16bit; //内部原始图像(16位深）
@@ -46,8 +57,9 @@ private:
 	std::thread    m_CamThread;   //拍摄线程（处理图像）
 	std::thread    m_StageThread; //位移台线程
 
-	bool  cam_threadActive;       //相机线程状态
-	bool  stage_threadActive;     //位移台线程状态
+	std::atomic<bool>  cam_threadActive;  //相机线程状态
+	std::atomic<bool>  stage_threadActive;//位移台线程状态
+	std::mutex     image_mtx;     //图片加锁
 
 private:
 	int     m_argc;
