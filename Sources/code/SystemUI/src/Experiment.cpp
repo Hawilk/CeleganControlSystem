@@ -27,12 +27,12 @@ Experiment::~Experiment()
 
 void Experiment::AutoDo()
 {
-	if (!InitCamera())
+	if (!InitStage())
 	{
 		return;
 	}
 
-	if (!InitStage())
+	if (!InitCamera())
 	{
 		return;
 	}
@@ -75,6 +75,7 @@ bool Experiment::InitCamera()
 
 	//开启相机线程
 	m_CamThread = std::thread(&Experiment::imageProcessing, this);
+	//waitCamThreadStart();
 
 	return EXP_SUC;
 }
@@ -90,11 +91,18 @@ void Experiment::imageProcessing()
 
 		std::pair<uint16_t, uint16_t> extrema = commonAlgorithm::findExtremaInImage(image);
 		commonAlgorithm::histogramEqualization(dstImage, image, extrema);
-
-		//图片写入加锁  防止数据竞争
-		image_mtx.lock();
 		m_image_8bit = cv::Mat(picHeight, picWidth, CV_8UC1, dstImage);
-		image_mtx.unlock();
+
+		//将图像放入临界区，使用信号量管理
+		{
+			std::lock_guard<std::mutex> lock(originImage_mtx);
+			if (originImages.size() >= MAX_QUEUE_SIZE)
+			{
+				originImages.pop_front();
+			}
+			originImages.push_back(m_image_8bit);
+		}
+		cond_unprocessed.notify_one();
 
 		delete[] image;
 	}
@@ -107,6 +115,7 @@ bool Experiment::InitStage()
 
 	//开启位移台线程
 	m_StageThread = std::thread(&Experiment::stageDisplacing, this);
+	waitStageThreadStart();
 
 	return EXP_SUC;
 }
@@ -127,7 +136,7 @@ void Experiment::waitStageThreadStart()
 {
 	while (!stage_threadActive)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		std::cout << "wait for stage initializing" << std::endl;
 	}
 }
@@ -145,21 +154,26 @@ void Experiment::stopStageThread()
 
 void Experiment::pvcamTest()
 {
-	waitCamThreadStart();
-	waitStageThreadStart();
-
 	std::pair<double, double> item;
-	while (cam_threadActive && stage_threadActive)
+	//while (cam_threadActive && stage_threadActive)
+	int i = 0;
+	while(true)
 	{
-		if(m_image_8bit.empty())
-			continue;
+		cv::Mat image;
+		{
+			std::unique_lock<std::mutex> lock(originImage_mtx);
+			if (originImages.empty())
+			{//等待deque不为空
+				cond_unprocessed.wait(lock);
+			}
+			image = originImages.front();
+			originImages.pop_front();
+		}
 
-		image_mtx.lock();
-		cv::imshow("1", m_image_8bit);
-		image_mtx.unlock();
-		auto key = cv::waitKey(100);
+		cv::imshow("Origin Image", image);
+		auto key = cv::waitKey(1);
 
-		double disp = 1;
+		double disp = 0.1;
 		if (key == 27)
 			break;
 		else if (key == 50)
@@ -178,9 +192,6 @@ void Experiment::pvcamTest()
 		{//右
 			m_Stage->moveStageByDirection(Direction::Right, disp);
 		}
-
-		item = m_Stage->getStagePosition();
-		std::cout << item.first << " : " << item.second << std::endl;
 	}
 
 	panelParam.initialPos_x = item.first;
@@ -232,7 +243,7 @@ void Experiment::waitCamThreadStart()
 {
 	while (!cam_threadActive)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		std::cout << "wait for cam take a pic" << std::endl;
 	}
 }
@@ -247,3 +258,4 @@ void Experiment::stopCamThread()
 			m_CamThread.join();
 	}
 }
+              

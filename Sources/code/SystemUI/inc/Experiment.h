@@ -14,6 +14,8 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <deque>
+#include <condition_variable>
 
 #include "CameraMoment.h"
 #include "StagePws.h"
@@ -69,8 +71,9 @@ private:
 
 	/************** 类内部成员变量 *************/
 private:
-	cv::Mat        m_image_16bit; //内部原始图像(16位深）
-	cv::Mat        m_image_8bit;  //显示图像(8位深）
+	cv::Mat  m_image_16bit; //内部原始图像(16位深）
+	cv::Mat  m_image_8bit;  //显示图像(8位深）
+	std::deque<cv::Mat>  originImages;   //原始图像队列
 
 	CameraBasePtr  m_Cam;         //Moment相机
 	StageBasePtr   m_Stage;       //Pws位移台
@@ -79,10 +82,11 @@ private:
 
 	std::atomic<bool>  cam_threadActive;  //相机线程状态
 	std::atomic<bool>  stage_threadActive;//位移台线程状态
-	std::mutex     image_mtx;     //图片加锁
+	std::mutex     originImage_mtx;       //原始图片加锁
+
+	std::condition_variable cond_unprocessed;  //信号量
 
 	std::map<std::string, std::string> Data; //配置文件参数 原始数据
-
 	struct PanelParam
 	{
 		double  initialPos_x;   //初始位置

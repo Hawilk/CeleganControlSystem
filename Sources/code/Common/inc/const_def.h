@@ -26,6 +26,8 @@
 #define  EXP_ERR        false     //实验错误提示
 #define  EXP_SUC        true
 
+#define  MAX_QUEUE_SIZE 10        //图片队列的容量
+
 //相机状态
 enum class CameraStatus
 {
