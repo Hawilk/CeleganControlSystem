@@ -19,8 +19,9 @@ Experiment::Experiment()
 
 Experiment::~Experiment()
 {
-	stopCamThread();
-	stopStageThread();
+	stopThread(cam_threadActive, m_CamThread);
+	//stopThread(process_threadActive, m_ProcessThread);
+	stopThread(stage_threadActive, m_StageThread);
 
 	SavePanelParam();
 }
@@ -37,6 +38,9 @@ void Experiment::AutoDo()
 		return;
 	}
 
+	//InitProcessing();
+
+	//图像显示测试
 	pvcamTest();
 }
 
@@ -74,13 +78,13 @@ bool Experiment::InitCamera()
 	}
 
 	//开启相机线程
-	m_CamThread = std::thread(&Experiment::imageProcessing, this);
-	//waitCamThreadStart();
+	m_CamThread = std::thread(&Experiment::imageCapturing, this);
+	waitThreadStart(cam_threadActive, 10);
 
 	return EXP_SUC;
 }
 
-void Experiment::imageProcessing()
+void Experiment::imageCapturing()
 {
 	cam_threadActive = true;
 	uint8_t* dstImage = new uint8_t[picWidth * picHeight];
@@ -91,18 +95,11 @@ void Experiment::imageProcessing()
 
 		std::pair<uint16_t, uint16_t> extrema = commonAlgorithm::findExtremaInImage(image);
 		commonAlgorithm::histogramEqualization(dstImage, image, extrema);
-		m_image_8bit = cv::Mat(picHeight, picWidth, CV_8UC1, dstImage);
+		cv::Mat image_8bit = cv::Mat(picHeight, picWidth, CV_8UC1, dstImage);
 
 		//将图像放入临界区，使用信号量管理
-		{
-			std::lock_guard<std::mutex> lock(originImage_mtx);
-			if (originImages.size() >= MAX_QUEUE_SIZE)
-			{
-				originImages.pop_front();
-			}
-			originImages.push_back(m_image_8bit);
-		}
-		cond_unprocessed.notify_one();
+		pushImageToThread(image_8bit, originImage_mtx, originImages, cond_origin);
+		//pushImageToThread(image_8bit, unprocessedImage_mtx, unprocessedImages, cond_unprocessed);
 
 		delete[] image;
 	}
@@ -115,7 +112,7 @@ bool Experiment::InitStage()
 
 	//开启位移台线程
 	m_StageThread = std::thread(&Experiment::stageDisplacing, this);
-	waitStageThreadStart();
+	waitThreadStart(stage_threadActive, 500);
 
 	return EXP_SUC;
 }
@@ -132,31 +129,75 @@ void Experiment::stageDisplacing()
 	}
 }
 
-void Experiment::waitStageThreadStart()
+void Experiment::InitProcessing()
 {
-	while (!stage_threadActive)
+	m_ProcessThread = std::thread(&Experiment::imageProcessing, this);
+	waitThreadStart(process_threadActive, 10);
+}
+
+void Experiment::imageProcessing()
+{
+	process_threadActive = true;
+	while (process_threadActive)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		std::cout << "wait for stage initializing" << std::endl;
+		cv::Mat image;
+		{
+			std::unique_lock<std::mutex> lock(unprocessedImage_mtx);
+			if (unprocessedImages.empty())
+			{//等待deque不为空
+				cond_unprocessed.wait(lock);
+			}
+			//此处逻辑与直接拿到图片显示不一样，从队尾取出最新拍照的图像，然后进行处理
+			image = unprocessedImages.back();
+			originImages.pop_back();
+		}
+
+		cv::imshow("unprocessed image", image);
+		cv::waitKey(100);
 	}
 }
 
-void Experiment::stopStageThread()
+void Experiment::waitThreadStart(std::atomic<bool>& active, uint8_t time_ms)
 {
-	//停止线程
-	if (stage_threadActive)
+	//主要用于等待线程标志置真
+	while (!active)
 	{
-		stage_threadActive = false;
-		if (m_StageThread.joinable())
-			m_StageThread.join();
+		std::this_thread::sleep_for(std::chrono::milliseconds(time_ms));
 	}
+}
+
+void Experiment::stopThread(std::atomic<bool>& active, std::thread& thrd)
+{
+	if (active)
+	{
+		active = false;
+		if (thrd.joinable())
+			thrd.join();
+	}
+}
+
+void Experiment::resetParamInitialPos()
+{
+	auto item = m_Stage->getStagePosition();
+	panelParam.initialPos_x = item.first;
+	panelParam.initialPos_y = item.second;
+}
+
+void Experiment::pushImageToThread(cv::Mat& image, std::mutex& mtx, std::deque<cv::Mat>& images, std::condition_variable& cond)
+{
+	{
+		std::lock_guard<std::mutex> lock(mtx);
+		if (images.size() >= MAX_QUEUE_SIZE)
+		{
+			images.pop_front();
+		}
+		images.push_back(image);
+	}
+	cond.notify_one();
 }
 
 void Experiment::pvcamTest()
 {
-	std::pair<double, double> item;
-
-	int i = 0;
 	while(true)
 	{
 		cv::Mat image;
@@ -164,7 +205,7 @@ void Experiment::pvcamTest()
 			std::unique_lock<std::mutex> lock(originImage_mtx);
 			if (originImages.empty())
 			{//等待deque不为空
-				cond_unprocessed.wait(lock);
+				cond_origin.wait(lock);
 			}
 			image = originImages.front();
 			originImages.pop_front();
@@ -194,9 +235,7 @@ void Experiment::pvcamTest()
 		}
 	}
 
-	item = m_Stage->getStagePosition();
-	panelParam.initialPos_x = item.first;
-	panelParam.initialPos_y = item.second;
+	resetParamInitialPos();
 }
 
 void Experiment::CamErrOccr(CameraStatus status)
@@ -226,37 +265,4 @@ void Experiment::CamErrOccr(CameraStatus status)
 	default:
 		break;
 	}
-}
-
-void Experiment::stageTest(int com)
-{
-	StageBase* m_stage = new StagePws(com);
-
-	auto pos = std::make_pair(static_cast<double>(10), static_cast<double>(10));
-	m_stage->AutoDo(pos);
-	auto newpos = m_stage->getStagePosition();
-	std::cout << newpos.first << " : " << newpos.second << std::endl;
-
-	delete m_stage;
-}
-
-void Experiment::waitCamThreadStart()
-{
-	while (!cam_threadActive)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		std::cout << "wait for cam take a pic" << std::endl;
-	}
-}
-
-void Experiment::stopCamThread()
-{
-	//停止线程
-	if (cam_threadActive)
-	{
-		cam_threadActive = false;
-		if (m_CamThread.joinable())
-			m_CamThread.join();
-	}
-}
-              
+}            

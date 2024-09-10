@@ -54,5 +54,12 @@ enum class Direction
 	Right                    //右
 };
 
+//图像掩膜类型
+enum class MaskStyle
+{
+	Rectangle,               //矩形
+	Circle                   //圆形
+};
+
 /**************** 字符常量定义区 ********************/
 const std::string configName = "PanelParameters.ini";
