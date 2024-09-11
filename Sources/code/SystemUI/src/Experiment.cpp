@@ -2,13 +2,8 @@
 
 Experiment::Experiment(int argc, char* argv[])
 {
-	m_argc = argc;
-	m_argv = argv;
-	m_com  = 3;
-	cam_threadActive = false;
-	stage_threadActive = false;
+	initInternalVar(argc, argv);
 
-	Data = Parameters::getInstance()->getParam();
 	InitPanelParam();
 }
 
@@ -20,7 +15,7 @@ Experiment::Experiment()
 Experiment::~Experiment()
 {
 	stopThread(cam_threadActive, m_CamThread);
-	//stopThread(process_threadActive, m_ProcessThread);
+	stopThread(process_threadActive, m_ProcessThread);
 	stopThread(stage_threadActive, m_StageThread);
 
 	SavePanelParam();
@@ -38,7 +33,7 @@ void Experiment::AutoDo()
 		return;
 	}
 
-	//InitProcessing();
+	InitProcessing();
 
 	//图像显示测试
 	pvcamTest();
@@ -46,6 +41,8 @@ void Experiment::AutoDo()
 
 void Experiment::InitPanelParam()
 {
+	Data = Parameters::getInstance()->getParam();
+
 	for (const auto& item : Data)
 	{
 		if (item.first == "InitPosition_x")
@@ -99,7 +96,7 @@ void Experiment::imageCapturing()
 
 		//将图像放入临界区，使用信号量管理
 		pushImageToThread(image_8bit, originImage_mtx, originImages, cond_origin);
-		//pushImageToThread(image_8bit, unprocessedImage_mtx, unprocessedImages, cond_unprocessed);
+		pushImageToThread(image_8bit, unprocessedImage_mtx, unprocessedImages, cond_unprocessed);
 
 		delete[] image;
 	}
@@ -149,12 +146,22 @@ void Experiment::imageProcessing()
 			}
 			//此处逻辑与直接拿到图片显示不一样，从队尾取出最新拍照的图像，然后进行处理
 			image = unprocessedImages.back();
-			originImages.pop_back();
+			unprocessedImages.pop_back();
 		}
 
-		cv::imshow("unprocessed image", image);
-		cv::waitKey(100);
+		//后续处理操作
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));  //此处模拟图像处理的速度远小于拍摄的速度
 	}
+}
+
+void Experiment::initInternalVar(int& argc, char* argv[])
+{
+	m_argc = argc;
+	m_argv = argv;
+	m_com = 3;
+	cam_threadActive = false;
+	stage_threadActive = false;
+	process_threadActive = false;
 }
 
 void Experiment::waitThreadStart(std::atomic<bool>& active, uint8_t time_ms)
@@ -214,28 +221,36 @@ void Experiment::pvcamTest()
 		cv::imshow("Origin Image", image);
 		auto key = cv::waitKey(1);
 
-		double disp = 0.1;
-		if (key == 27)
+		if (!handleKey(key))
 			break;
-		else if (key == 50)
-		{//下
-			m_Stage->moveStageByDirection(Direction::Down, disp);
-		}
-		else if (key == 56)
-		{//上
-			m_Stage->moveStageByDirection(Direction::Up, disp);
-		}
-		else if (key == 52)
-		{//左
-			m_Stage->moveStageByDirection(Direction::Left, disp);
-		}
-		else if (key == 54)
-		{//右
-			m_Stage->moveStageByDirection(Direction::Right, disp);
-		}
 	}
 
 	resetParamInitialPos();
+}
+
+bool Experiment::handleKey(int& key)
+{
+	double disp = 0.1;
+	if (key == 27)
+		return false;
+	else if (key == 50)
+	{//下
+		m_Stage->moveStageByDirection(Direction::Down, disp);
+	}
+	else if (key == 56)
+	{//上
+		m_Stage->moveStageByDirection(Direction::Up, disp);
+	}
+	else if (key == 52)
+	{//左
+		m_Stage->moveStageByDirection(Direction::Left, disp);
+	}
+	else if (key == 54)
+	{//右
+		m_Stage->moveStageByDirection(Direction::Right, disp);
+	}
+	
+	return true;
 }
 
 void Experiment::CamErrOccr(CameraStatus status)

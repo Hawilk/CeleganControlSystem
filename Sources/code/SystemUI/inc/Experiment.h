@@ -35,7 +35,7 @@ public:
 
 	/*************** 类内部实现 ****************/
 private:  
-	/**************** 硬件流程 ****************/
+	/*--------------- 硬件流程 ----------------*/
 	void InitPanelParam();      //加载控制面板参数
 	void SavePanelParam();      //保存控制面板参数
 
@@ -48,7 +48,10 @@ private:
 	void InitProcessing();      //初始化图像处理模块
 	void imageProcessing();     //图像处理线程内部
 
-	/**************** Common *****************/
+	/*---------------- Common ----------------*/
+	//初始化内部变量
+	void initInternalVar(int& argc, char* argv[]);
+
 	//等待线程启动
 	void waitThreadStart(std::atomic<bool>& active, uint8_t time_ms);
 
@@ -64,8 +67,10 @@ private:
 	//将拍摄的图片放入对应的线程，并发出对应的信号量
 	void pushImageToThread(cv::Mat& image, std::mutex& mtx, std::deque<cv::Mat>& images, std::condition_variable& cond);
 
-	/*************** 仅供测试 *****************/
+	/*-------------- 仅供测试 ----------------*/
 	void pvcamTest();
+
+	bool handleKey(int& key);
 
 	/************** 类内部成员变量 *************/
 private:
