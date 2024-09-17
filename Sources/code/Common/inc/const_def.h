@@ -55,7 +55,7 @@ enum class Direction
 };
 
 //图像掩膜类型
-enum class MaskStyle
+enum class MaskType
 {
 	Rectangle,               //矩形
 	Circle                   //圆形

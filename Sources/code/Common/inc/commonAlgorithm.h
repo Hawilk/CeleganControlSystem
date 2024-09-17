@@ -10,7 +10,17 @@
 #include <algorithm>
 #include <vector>
 #include <cstdint>
+#include <chrono>
+#include <ctime>
+
 #include "const_def.h"
+
+struct curTime {
+	uint32_t hour;
+	uint32_t minute;
+	uint32_t second;
+	uint32_t millisecond;
+};
 
 class commonAlgorithm
 {
@@ -31,4 +41,21 @@ public:
 	 * @return   pair first-最小值，second-最大值
 	 */
 	static std::pair<uint16_t, uint16_t> findExtremaInImage(uint16_t* image);
+
+	/**
+	 * @brief    获取当前的时间戳
+	 * @author   yangshuhao
+	 * @date     2024/9/16
+	 * @return   uint32_t - style : hhmmssmmm
+	 */
+	static uint32_t getCurTimeStamp();
+
+	/**
+	 * @brief    将当前的时间戳转化为时分秒
+	 * @author   yangshuhao
+	 * @date     2024/9/16
+	 * @param    uint32_t - style : hhmmssmmm
+	 * @return   curTime
+	 */
+	static curTime convertTimeStamp(uint32_t timestamp);
 };

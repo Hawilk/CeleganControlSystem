@@ -42,3 +42,17 @@ target_sources(${TARGET_NAME}
     PRIVATE  ${${TARGET_NAME}_SRC_FILES}
     PRIVATE  ${${TARGET_NAME}_HEADER_FILES}
 )
+
+# 在此链接opencv
+find_package(OpenCV REQUIRED)
+target_include_directories(
+    ${TARGET_NAME}
+    PUBLIC 
+      "${${TARGET_NAME}_SOURCE_DIR}/inc"
+      "${OpenCV_INCLUDE_DIRS}"
+)
+
+target_link_libraries(${TARGET_NAME}
+    PUBLIC  ${OpenCV_LIBS}
+    PUBLIC  ${PROJECT_NAME}::Common
+)

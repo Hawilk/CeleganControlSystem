@@ -21,6 +21,7 @@
 #include "StagePws.h"
 #include "commonAlgorithm.h"
 #include "Parameters.h"
+#include "NematodeProcess.h"
 
 class Experiment
 {
@@ -69,7 +70,6 @@ private:
 
 	/*-------------- 仅供测试 ----------------*/
 	void pvcamTest();
-
 	bool handleKey(int& key);
 
 	/************** 类内部成员变量 *************/
@@ -92,7 +92,6 @@ private:
 	std::condition_variable cond_unprocessed; //未处理图像信号量
 	std::condition_variable cond_processed;   //图像处理完毕信号量
 
-	std::map<std::string, std::string> Data; //配置文件参数 原始数据
 	struct PanelParam
 	{
 		double  initialPos_x;   //初始位置

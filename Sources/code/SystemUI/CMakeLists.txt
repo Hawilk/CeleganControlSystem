@@ -52,4 +52,5 @@ target_include_directories(
 # 链接需要依赖的库文件库文件
 target_link_libraries(${TARGET_NAME}
     PUBLIC  ${PROJECT_NAME}::HardwareControl
+    PUBLIC  ${PROJECT_NAME}::PictureProcess
 )

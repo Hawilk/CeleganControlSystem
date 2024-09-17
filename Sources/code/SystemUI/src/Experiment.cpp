@@ -23,12 +23,7 @@ Experiment::~Experiment()
 
 void Experiment::AutoDo()
 {
-	if (!InitStage())
-	{
-		return;
-	}
-
-	if (!InitCamera())
+	if (!InitCamera() || !InitStage())
 	{
 		return;
 	}
@@ -41,7 +36,7 @@ void Experiment::AutoDo()
 
 void Experiment::InitPanelParam()
 {
-	Data = Parameters::getInstance()->getParam();
+	auto Data = Parameters::getInstance()->getParam();
 
 	for (const auto& item : Data)
 	{
