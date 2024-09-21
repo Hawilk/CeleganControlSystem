@@ -68,9 +68,11 @@ private:
 	//将拍摄的图片放入对应的线程，并发出对应的信号量
 	void pushImageToThread(cv::Mat& image, std::mutex& mtx, std::deque<cv::Mat>& images, std::condition_variable& cond);
 
+public:
 	/*-------------- 仅供测试 ----------------*/
 	void pvcamTest();
 	bool handleKey(int& key);
+	void picProcessTest();
 
 	/************** 类内部成员变量 *************/
 private:

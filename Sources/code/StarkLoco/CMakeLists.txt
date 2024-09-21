@@ -38,13 +38,25 @@ add_executable(${TARGET_NAME}
     ${${TARGET_NAME}_HEADER_FILES}
     ${${TARGET_NAME}_SRC_FILES}
     ${${TARGET_NAME}_QT_UI_FILES}
-    ${${TARGET_NAME}_QT_QRC_FILES}  
+    ${${TARGET_NAME}_QT_QRC_FILES}
+    "systemInterface.ui"  
 )
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
+    PROPERTY VS_STARTUP_PROJECT ${TARGET_NAME})
 
 target_include_directories(${TARGET_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/code/SystemUI/inc
 )
 
+# 添加Qt库路径
+set_target_properties(${TARGET_NAME} PROPERTIES AUTOMOC ON)
+set_target_properties(${TARGET_NAME} PROPERTIES AUTOUIC ON)
+set_target_properties(${TARGET_NAME} PROPERTIES AUTORCC ON)
+
+find_package(Qt5 COMPONENTS Widgets)
+
 target_link_libraries(${TARGET_NAME}
+    PUBLIC  Qt5::Widgets
     PUBLIC  ${PROJECT_NAME}::SystemUI
 )
