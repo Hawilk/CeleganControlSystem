@@ -13,6 +13,12 @@
     <height>800</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>1300</width>
@@ -269,6 +275,14 @@ QPushButton:hover {
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Times New Roman</family>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
             </property>
            </widget>
           </item>
@@ -1233,7 +1247,14 @@ QPushButton:hover {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="PathEdit"/>
+           <widget class="QLineEdit" name="PathEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="FolderButton">
@@ -1295,7 +1316,14 @@ QPushButton:hover {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="NameEdit"/>
+           <widget class="QLineEdit" name="NameEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QSpinBox" name="NameSpin">
@@ -1466,7 +1494,28 @@ QPushButton:hover {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="IPEdit"/>
+           <widget class="QLineEdit" name="IPEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Times New Roman</family>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -1509,7 +1558,25 @@ QPushButton:hover {
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="PortEdit"/>
+           <widget class="QLineEdit" name="PortEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Times New Roman</family>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="ConnectButton">
@@ -1582,7 +1649,10 @@ QPushButton:hover {
            <widget class="QLabel" name="ConnectStatus">
             <property name="font">
              <font>
+              <family>Times New Roman</family>
               <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
              </font>
             </property>
             <property name="styleSheet">
