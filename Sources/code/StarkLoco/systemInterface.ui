@@ -263,6 +263,9 @@ QPushButton:hover {
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -878,7 +881,7 @@ QPushButton:hover {
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="Radius">
+           <widget class="QSlider" name="RadiusSlider">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1201,7 +1204,7 @@ QPushButton:hover {
        <property name="title">
         <string>Data Save Parameters</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,1">
         <property name="spacing">
          <number>5</number>
         </property>
@@ -1796,7 +1799,7 @@ QPushButton:hover {
                </font>
               </property>
               <property name="text">
-               <string>PushButton</string>
+               <string>Right</string>
               </property>
              </widget>
             </item>
@@ -1835,7 +1838,8 @@ QPushButton:hover {
                </font>
               </property>
               <property name="styleSheet">
-               <string notr="true">background-color: rgb(255, 255, 255);</string>
+               <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;</string>
               </property>
               <property name="text">
                <string>STOP</string>
@@ -1884,7 +1888,8 @@ QPushButton:hover {
                </font>
               </property>
               <property name="styleSheet">
-               <string notr="true">background-color: rgb(255, 255, 255);</string>
+               <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;</string>
               </property>
               <property name="text">
                <string>LEFT</string>
@@ -1934,7 +1939,8 @@ QPushButton:hover {
                </font>
               </property>
               <property name="styleSheet">
-               <string notr="true">background-color: rgb(255, 255, 255);</string>
+               <string notr="true">background-color: rgb(255, 255, 255);
+border-radius: 5px;</string>
               </property>
               <property name="text">
                <string>RIGHT</string>
@@ -2163,7 +2169,7 @@ QPushButton:hover {
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_25">
+         <layout class="QHBoxLayout" name="horizontalLayout_25" stretch="1,1,1,1">
           <item>
            <widget class="QLabel" name="StageSpeedText">
             <property name="font">
@@ -2183,9 +2189,9 @@ QPushButton:hover {
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="StageSpeedSpin">
+           <widget class="QDoubleSpinBox" name="SpeedSpin">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2211,9 +2217,9 @@ QPushButton:hover {
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="AccelerationSpin">
+           <widget class="QDoubleSpinBox" name="AccelerationSpin">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -2457,7 +2463,7 @@ QPushButton:hover {
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="TractButton">
+             <widget class="QPushButton" name="TrackButton">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
