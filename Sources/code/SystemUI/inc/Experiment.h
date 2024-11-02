@@ -34,6 +34,38 @@ public:
 	//类功能启动入口
 	void AutoDo();
 
+	/*
+	* 光电刺激模块功能
+	*/
+	void setLedPercent(uint32_t value);     //设置光强
+	void setLedSwitch();                    //光遗传开关
+
+	/*
+	* 图像处理模块功能
+	*/
+	cv::Mat getCurImage();                  //获取当前图像
+	cv::Mat getCurImageWithInfo();		    //获取当前图像（带参数信息）
+	cv::Mat getCurPrcImage();				//获取已处理图像
+	cv::Mat getCurPrcImageWithIndicate();   //获取已处理图像（带参数信息）
+	uint32_t getCurFrame();					//获取当前帧数
+	uint32_t getCurFPS();					//获取当前帧率
+	void setMask(MaskType m_type);			//设置掩膜
+	void setRadius(uint32_t radius);		//设置半径
+	void setCenterLine(uint32_t centerline);//设置中心线
+	void setBinThresh(uint32_t thresh);		//设置二值化阈值
+	void setDenoise(uint32_t param);		//设置去噪参数
+	void beginProcess();					//开始图像处理
+	void endProcess();						//结束图像处理
+	void contrastImage();					//增强对比度
+
+	/*
+	* 存储模块功能
+	*/
+
+	/*
+	* 位移台控制模块功能
+	*/
+
 	/*************** 类内部实现 ****************/
 private:  
 	/*--------------- 硬件流程 ----------------*/

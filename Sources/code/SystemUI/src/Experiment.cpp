@@ -25,6 +25,7 @@ void Experiment::AutoDo()
 {
 	if (!InitCamera() || !InitStage())
 	{
+		std::cout << "Initial failed" << std::endl;
 		return;
 	}
 
@@ -43,6 +44,7 @@ void Experiment::InitPanelParam()
 		if (item.first == "InitPosition_x")
 		{
 			panelParam.initialPos_x = std::stod(item.second);
+			std::cout << panelParam.initialPos_x << std::endl;
 		}
 		else if (item.first == "InitPosition_y")
 		{

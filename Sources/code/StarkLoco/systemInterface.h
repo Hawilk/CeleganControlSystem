@@ -16,6 +16,8 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <memory>
+#include <Experiment.h>
+#include "const_def.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,6 +32,7 @@ class systemInterface : public QWidget
 
 public:
 	systemInterface();
+	systemInterface(int argc, char* argv[]);
 	~systemInterface();
 
 public:
@@ -52,7 +55,7 @@ protected slots:
 	void on_BeginPrcButton_clicked();   //图像处理开关
 	void on_ContrastButton_clicked();   //对比度增强开关
 	void on_SaveButton_clicked();	    //数据保存开关
-	void on_ChglanButton_clicked();     //语言切换开关
+	void on_ChgLanButton_clicked();     //语言切换开关
 	void on_ConnectButton_clicked();    //远程模块连接
 	void on_RemoteStopButton_clicked(); //远程停止指令
 	void on_RemoteLeftButton_clicked(); //远程向左指令
@@ -64,7 +67,8 @@ protected slots:
 	void on_ResetButton_clicked();		//位移信息重置
 	void on_YLockButton_clicked();		//纵轴位移锁定
 	void on_TrackButton_clicked();		//跟踪按钮
-
+	void on_OpenDeviceButton_clicked();         //打开设备
+	void on_OpenLogButton_clicked();            //打开日志
 
 protected:
 	void shiftButtonTimer();  //位移按键连续触发
@@ -73,6 +77,7 @@ protected:
 	void deleteTimer(QTimer* timer);
 
 	void spinBoxConnect();    //连接QSpinBox信号和槽
+	void setLanguage(LanguageType lanType);
 
 protected:
 	/* 用于按键的连续触发 */
@@ -110,6 +115,11 @@ protected:
 	QTimer* m_downTimer;
 	QTimer* m_leftTimer;
 	QTimer* m_rightTimer;
+
+private:
+	int    interface_argc;
+	char** interface_argv;
+	ExperimentPtr   m_exp;
 
 };
 

@@ -29,7 +29,7 @@ void Parameters::loadData()
 {
 	std::ifstream file(fileName);
 	if (!file.is_open()) {
-		std::cerr << "can't open ini file" << std::endl;
+		std::cout << "can't open ini file" << std::endl;
 		return;
 	}
 

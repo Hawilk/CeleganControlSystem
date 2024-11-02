@@ -1409,7 +1409,7 @@ QPushButton:hover {
    <item row="0" column="2">
     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="6,7,1">
      <item>
-      <widget class="QGroupBox" name="groupBox_5">
+      <widget class="QGroupBox" name="RemoteConnect">
        <property name="font">
         <font>
          <family>Times New Roman</family>
@@ -2508,7 +2508,7 @@ QPushButton:hover {
         <number>5</number>
        </property>
        <item>
-        <widget class="QPushButton" name="SaveButton_2">
+        <widget class="QPushButton" name="OpenDeviceButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -2529,7 +2529,7 @@ QPushButton:hover {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="ChgLanButton_2">
+        <widget class="QPushButton" name="OpenLogButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
            <horstretch>0</horstretch>

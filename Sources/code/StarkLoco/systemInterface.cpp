@@ -1,8 +1,14 @@
 #include "systemInterface.h"
 #include "ui_systemInterface.h"
 #include <iostream>
+#include <QDebug>
 
 systemInterface::systemInterface()
+{
+	
+}
+
+systemInterface::systemInterface(int argc, char* argv[]) : interface_argc(argc), interface_argv(argv)
 {
 	ui = std::make_shared<Ui::systemInterface>();
 	ui->setupUi(this);
@@ -94,9 +100,20 @@ void systemInterface::on_SaveButton_clicked()
 
 }
 
-void systemInterface::on_ChglanButton_clicked()
+void systemInterface::on_ChgLanButton_clicked()
 {
-
+	auto text = ui->ChgLanButton->text();
+	const QString chineseText = QString::fromLocal8Bit("切换中文");
+	if (text == chineseText)
+	{
+		setLanguage(LanguageType::Chinese);
+		ui->ChgLanButton->setText(QString::fromUtf8("English"));
+	}
+	else
+	{
+		setLanguage(LanguageType::English);
+		ui->ChgLanButton->setText(chineseText);
+	}
 }
 
 void systemInterface::on_ConnectButton_clicked()
@@ -150,6 +167,17 @@ void systemInterface::on_YLockButton_clicked()
 }
 
 void systemInterface::on_TrackButton_clicked()
+{
+
+}
+
+void systemInterface::on_OpenDeviceButton_clicked()
+{
+	m_exp = std::make_unique<Experiment>(interface_argc, interface_argv);
+	m_exp->AutoDo();
+}
+
+void systemInterface::on_OpenLogButton_clicked()
 {
 
 }
@@ -211,6 +239,73 @@ void systemInterface::spinBoxConnect()
 	connect(ui->DenoiseSpin, &QSpinBox::editingFinished, this, &systemInterface::DenoiseSpin_valueChanged);
 	connect(ui->SpeedSpin, &QSpinBox::editingFinished, this, &systemInterface::SpeedSpin_valueChanged);
 	connect(ui->AccelerationSpin, &QSpinBox::editingFinished, this, &systemInterface::AccelerationSpin_valueChanged);
+}
+
+void systemInterface::setLanguage(LanguageType lanType)
+{
+	//设置GroupBox标题
+	auto setGroupText = [=](QGroupBox* groupBox, textName& text) {
+		groupBox->setTitle(QString::fromLocal8Bit(text.at(lanType).c_str()));
+	};
+	setGroupText(ui->Display, ImageDisplaygroup);
+	setGroupText(ui->OptoParam, OptoParamgroup);
+	setGroupText(ui->ElecParam, ElecParamgroup);
+	setGroupText(ui->ProcessParam, Processgroup);
+	setGroupText(ui->DataSave, DataSavegroup);
+	setGroupText(ui->RemoteConnect, RemoteConnectgroup);
+	setGroupText(ui->StageParam, StageParamgroup);
+
+	//设置Label文本
+	auto setLabelText = [=](QLabel* label, textName& text) {
+		label->setText(QString::fromLocal8Bit(text.at(lanType).c_str()));
+	};
+	setLabelText(ui->SrcImageText, srcImagetext);
+	setLabelText(ui->PrcImageText, prcImagetext);
+	setLabelText(ui->LedText, ledtext);
+	setLabelText(ui->AmpText, amptext);
+	setLabelText(ui->FreText, fretext);
+	setLabelText(ui->DutyText, dutytext);
+	setLabelText(ui->FrameText, frametext);
+	setLabelText(ui->FPSText, fpstext);
+	setLabelText(ui->MaskText, masktext);
+	setLabelText(ui->RadiusText, radiustext);
+	setLabelText(ui->CenterLineText, centerlinetext);
+	setLabelText(ui->BinText, bintext);
+	setLabelText(ui->DenoiseText, denoisetext);
+	setLabelText(ui->PathText, pathtext);
+	setLabelText(ui->NameText, nametext);
+	setLabelText(ui->IPText, iptext);
+	setLabelText(ui->PortText, porttext);
+	setLabelText(ui->ConnectStatusText, connectStatustext);
+	setLabelText(ui->StopIndicate, stopIndicatetext);
+	setLabelText(ui->LeftIndicate, leftIndicatetext);
+	setLabelText(ui->RightIndicate, rightIndicatetext);
+	setLabelText(ui->xPosText, xPostext);
+	setLabelText(ui->yPosText, yPostext);
+	setLabelText(ui->VelocityText, velocitytext);
+	setLabelText(ui->StageSpeedText, stageSpeedtext);
+	setLabelText(ui->AccelerationText, accelerationtext);
+
+	//设置Button文本
+	auto setButtonText = [=](QPushButton* button, textName& text) {
+		button->setText(QString::fromLocal8Bit(text.at(lanType).c_str()));
+	};
+	setButtonText(ui->LedButton, ledButtontext);
+	setButtonText(ui->DcButton, DCButtontext);
+	setButtonText(ui->SwButton, SWButtontext);
+	setButtonText(ui->ElecStopButton, StopButtontext);
+	setButtonText(ui->BeginPrcButton, BeginPrcButtontext);
+	setButtonText(ui->ContrastButton, CtrImpButtontext);
+	setButtonText(ui->SaveButton, SaveButtontext);
+	setButtonText(ui->ConnectButton, ConnectButtontext);
+	setButtonText(ui->RemoteStopButton, CntStopButtontext);
+	setButtonText(ui->RemoteLeftButton, CntLeftButtontext);
+	setButtonText(ui->RemoteRightButton, CntRightButtontext);
+	setButtonText(ui->ResetButton, ResetButtontext);
+	setButtonText(ui->YLockButton, YLockButtontext);
+	setButtonText(ui->TrackButton, StartTrackButtontext);
+	setButtonText(ui->OpenDeviceButton, OpenDeviceButtontext);
+	setButtonText(ui->OpenLogButton, OpenLogFileButtontext);
 }
 
 void systemInterface::onUpButtonPressed()

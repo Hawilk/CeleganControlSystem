@@ -60,5 +60,13 @@ target_link_libraries(${TARGET_NAME}
     PUBLIC  ${PROJECT_NAME}::Common
     PUBLIC  ${PROJECT_NAME}::PVCam
     PUBLIC  ${EXTERNAL}/PwsStage/lib/SLS_Dll.lib
-    #PUBLIC  ${EXTERNAL}/PwsStage/lib/SLS_Dll.dll
 )
+
+##复制位移台所需要的第三方动态库到运行时路径
+set(SLS_DLL_PATH "${EXTERNAL}/PwsStage/lib/SLS_Dll.dll")
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${SLS_DLL_PATH}"
+    "${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}"
+)
+message("SLS_DLL_PATH: ${SLS_DLL_PATH}")

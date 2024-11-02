@@ -32,7 +32,7 @@ source_group(
     FILES ${${TARGET_NAME}_SRC_FILES}
 )
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 #生成可执行程序
 add_executable(${TARGET_NAME}
     ${${TARGET_NAME}_HEADER_FILES}
@@ -59,4 +59,5 @@ find_package(Qt5 COMPONENTS Widgets)
 target_link_libraries(${TARGET_NAME}
     PUBLIC  Qt5::Widgets
     PUBLIC  ${PROJECT_NAME}::SystemUI
+    #PUBLIC  ${EXTERNAL}/PwsStage/lib/SLS_Dll.dll
 )
