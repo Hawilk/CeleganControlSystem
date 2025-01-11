@@ -8,7 +8,7 @@ systemInterface::systemInterface()
 	
 }
 
-systemInterface::systemInterface(int argc, char* argv[]) : interface_argc(argc), interface_argv(argv)
+systemInterface::systemInterface(int argc, char* argv[]) : interface_argc(argc), interface_argv(argv), deviceStatus(false)
 {
 	ui = std::make_shared<Ui::systemInterface>();
 	ui->setupUi(this);
@@ -18,11 +18,58 @@ systemInterface::systemInterface(int argc, char* argv[]) : interface_argc(argc),
 
 	shiftButtonTimer();
 	spinBoxConnect();
+
+	//开启定时器事件 - 显示图像
+	startTimer(50);
 }
 
 systemInterface::~systemInterface()
 {
 	deleteButtonTimer();
+}
+
+void systemInterface::timerEvent(QTimerEvent* event)
+{
+	if (deviceStatus == false) return;
+
+	cv::Mat origin = m_exp->getCurImage();
+	cv::Mat prcImage = m_exp->getCurPrcImageWithIndicate();
+
+	QSize labelSize0 = ui->SrcImage->size();
+	QSize labelSize1 = ui->PrcImage->size();
+	cv::resize(origin, origin, cv::Size(labelSize0.width(), labelSize0.height()));
+	cv::resize(prcImage, prcImage, cv::Size(labelSize0.width(), labelSize0.height()));
+	QImage qImage = MatToImage(origin);
+	QImage prc = MatToImage(prcImage);
+
+	ui->SrcImage->setPixmap(QPixmap::fromImage(qImage));
+	ui->PrcImage->setPixmap(QPixmap::fromImage(prc));
+}
+
+QImage systemInterface::MatToImage(const cv::Mat& mat)
+{
+	if (mat.empty()) {
+		return QImage();
+	}
+
+	switch (mat.type()) {
+	case CV_8UC1: {
+		QImage image(mat.data, mat.cols, mat.rows, static_cast<int>(mat.step), QImage::Format_Grayscale8);
+		return image;
+	}
+	case CV_8UC3: {
+		QImage image(mat.data, mat.cols, mat.rows, static_cast<int>(mat.step), QImage::Format_RGB888);
+		return image.rgbSwapped();
+	}
+	case CV_8UC4: {
+		QImage image(mat.data, mat.cols, mat.rows, static_cast<int>(mat.step), QImage::Format_ARGB32);
+		return image;
+	}
+	default:
+		break;
+	}
+
+	return QImage();
 }
 
 void systemInterface::on_LedSlider_valueChanged(int value)
@@ -173,8 +220,14 @@ void systemInterface::on_TrackButton_clicked()
 
 void systemInterface::on_OpenDeviceButton_clicked()
 {
-	m_exp = std::make_unique<Experiment>(interface_argc, interface_argv);
-	m_exp->AutoDo();
+	if (!deviceStatus)
+	{
+		m_exp = std::make_unique<Experiment>(interface_argc, interface_argv);
+		m_exp->AutoDo();
+
+		if(m_exp->checkDeviceStatus())
+			deviceStatus = true;
+	}
 }
 
 void systemInterface::on_OpenLogButton_clicked()
@@ -286,7 +339,7 @@ void systemInterface::setLanguage(LanguageType lanType)
 	setLabelText(ui->StageSpeedText, stageSpeedtext);
 	setLabelText(ui->AccelerationText, accelerationtext);
 
-	//设置Button文本
+	//设置PushButton文本
 	auto setButtonText = [=](QPushButton* button, textName& text) {
 		button->setText(QString::fromLocal8Bit(text.at(lanType).c_str()));
 	};
@@ -306,6 +359,16 @@ void systemInterface::setLanguage(LanguageType lanType)
 	setButtonText(ui->TrackButton, StartTrackButtontext);
 	setButtonText(ui->OpenDeviceButton, OpenDeviceButtontext);
 	setButtonText(ui->OpenLogButton, OpenLogFileButtontext);
+
+	//设置PushButton文本
+	auto setRadioButtonText = [=](QRadioButton* button, textName& text) {
+		button->setText(QString::fromLocal8Bit(text.at(lanType).c_str()));
+	};
+	setRadioButtonText(ui->CircleCheck, circleChecktext);
+	setRadioButtonText(ui->RectCheck, rectChecktext);
+	setRadioButtonText(ui->OperationStop, operationStoptext);
+	setRadioButtonText(ui->OperationLeft, operationLefttext);
+	setRadioButtonText(ui->OperationRight, operationRighttext);
 }
 
 void systemInterface::onUpButtonPressed()

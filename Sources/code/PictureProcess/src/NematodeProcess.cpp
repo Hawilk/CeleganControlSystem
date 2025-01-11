@@ -11,7 +11,7 @@ NematodeProcess::NematodeProcess()
 
 NematodeProcess::~NematodeProcess()
 {
-	SavePanelParam();
+	//SavePanelParam();
 }
 
 picInfoPtr NematodeProcess::AutoDo(cv::Mat& originImage)
@@ -159,16 +159,11 @@ void NematodeProcess::CopyImageByMask(cv::Mat& image)
 
 void NematodeProcess::ImageDenosingBinary()
 {
-	//1. 高斯去噪
-	cv::GaussianBlur(unprocessedImage, unprocessedImage, cv::Size(gaussKernel, gaussKernel), 0);
+	//1. 高斯去噪  --  Bug : 消耗大量时间进行去噪
+	//cv::GaussianBlur(unprocessedImage, unprocessedImage, cv::Size(gaussKernel, gaussKernel), 0);
 
 	//2. 二值化处理
-#if 1
 	cv::threshold(unprocessedImage, unprocessedImage, binThresh, 255, cv::THRESH_BINARY);
-#else
-	//尝试使用自适应的阈值处理
-	cv::adaptiveThreshold(unprocessedImage, unprocessedImage, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 2);
-#endif
 	
 	//3. 膨胀和腐蚀操作
 	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(kernelSize, kernelSize));

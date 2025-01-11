@@ -51,7 +51,9 @@ void Parameters::loadData()
 
 std::map<std::string, std::string> Parameters::getParam()
 {
-	loadData();
+	if(data.empty())
+		loadData();
+
 	return this->data;
 }
 

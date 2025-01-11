@@ -35,6 +35,12 @@ public:
 	systemInterface(int argc, char* argv[]);
 	~systemInterface();
 
+private:
+	void timerEvent(QTimerEvent* event) override;    //重写QWidget类的定时器事件
+
+	/************ Common ************/
+	QImage MatToImage(const cv::Mat& mat);    //将mat转化为qImage
+
 public:
 	systemInterfacePtr ui;    //界面实例
 
@@ -120,6 +126,8 @@ private:
 	int    interface_argc;
 	char** interface_argv;
 	ExperimentPtr   m_exp;
+
+	bool   deviceStatus;
 
 };
 

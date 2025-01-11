@@ -31,8 +31,77 @@ void Experiment::AutoDo()
 
 	InitProcessing();
 
-	//图像显示测试
-	pvcamTest();
+}
+
+bool Experiment::checkDeviceStatus()
+{
+	if (cam_threadActive && stage_threadActive && process_threadActive)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+cv::Mat Experiment::getCurImage()
+{
+	cv::Mat image;
+	{
+		std::unique_lock<std::mutex> lock(originImage_mtx);
+		if (originImages.empty())
+		{//等待deque不为空
+			cond_origin.wait(lock);
+		}
+		image = originImages.front().first;
+		originImages.pop_front();
+	}
+	return image;
+}
+
+cv::Mat Experiment::getCurImageWithInfo()
+{
+	cv::Mat image;
+	return image;
+}
+
+cv::Mat Experiment::getCurPrcImage()
+{
+	std::pair<cv::Mat, picInfoPtr> temp_pair;
+	{
+		std::unique_lock<std::mutex> lock(processedImage_mtx);
+		if (processedImages.empty())
+		{//等待deque不为空
+			cond_processed.wait(lock);
+		}
+		temp_pair = processedImages.back();
+		processedImages.pop_back();
+	}
+	return temp_pair.first;
+}
+
+cv::Mat Experiment::getCurPrcImageWithIndicate()
+{
+	std::pair<cv::Mat, picInfoPtr> temp_pair;
+	{
+		std::unique_lock<std::mutex> lock(processedImage_mtx);
+		if (processedImages.empty())
+		{//等待deque不为空
+			cond_processed.wait(lock);
+		}
+		temp_pair = processedImages.back();
+		processedImages.pop_back();
+	}
+
+	//界面上显示彩色图片
+	cv::Mat colorImage;
+	cv::cvtColor(temp_pair.first, colorImage, cv::COLOR_GRAY2BGR);
+
+	auto picinfo = temp_pair.second;
+	signalImageByPoints(colorImage, picinfo->centerLine, 0);
+	signalImageByPoints(colorImage, picinfo->left_contour, 1);
+	signalImageByPoints(colorImage, picinfo->right_contour, 2);
+
+	return colorImage;
 }
 
 void Experiment::InitPanelParam()
@@ -82,6 +151,7 @@ void Experiment::imageCapturing()
 {
 	cam_threadActive = true;
 	uint8_t* dstImage = new uint8_t[picWidth * picHeight];
+	uint32_t frameNum = 0;
 	while (cam_threadActive)
 	{
 		uint16_t* image = new uint16_t[picWidth * picHeight];
@@ -91,8 +161,11 @@ void Experiment::imageCapturing()
 		commonAlgorithm::histogramEqualization(dstImage, image, extrema);
 		cv::Mat image_8bit = cv::Mat(picHeight, picWidth, CV_8UC1, dstImage);
 
+		frameNum++;
+		OriginInfo info{ frameNum, commonAlgorithm::getCurTimeStamp() };
+
 		//将图像放入临界区，使用信号量管理
-		pushImageToThread(image_8bit, originImage_mtx, originImages, cond_origin);
+		pushImageWithInfoToThread(std::make_pair(image_8bit, info), originImage_mtx, originImages, cond_origin);
 		pushImageToThread(image_8bit, unprocessedImage_mtx, unprocessedImages, cond_unprocessed);
 
 		delete[] image;
@@ -131,6 +204,10 @@ void Experiment::InitProcessing()
 
 void Experiment::imageProcessing()
 {
+	m_np = std::make_shared<NematodeProcess>();
+	uint32_t r = 550;
+	m_np->createCircleMask(r, picWidth, picHeight);
+
 	process_threadActive = true;
 	while (process_threadActive)
 	{
@@ -146,8 +223,16 @@ void Experiment::imageProcessing()
 			unprocessedImages.pop_back();
 		}
 
-		//后续处理操作
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));  //此处模拟图像处理的速度远小于拍摄的速度
+		auto picinfo = m_np->AutoDo(image);
+		{
+			std::lock_guard<std::mutex> lock(processedImage_mtx);
+			if (processedImages.size() >= MAX_QUEUE_SIZE)
+			{
+				processedImages.pop_front();
+			}
+			processedImages.push_back(std::make_pair(image, picinfo));
+		}
+		cond_processed.notify_one();
 	}
 }
 
@@ -200,6 +285,49 @@ void Experiment::pushImageToThread(cv::Mat& image, std::mutex& mtx, std::deque<c
 	cond.notify_one();
 }
 
+void Experiment::pushImageWithInfoToThread(std::pair<cv::Mat, originInfo> imageWithInfo, std::mutex& mtx, std::deque<std::pair<cv::Mat, originInfo>>& images, std::condition_variable& cond)
+{
+	{
+		std::lock_guard<std::mutex> lock(mtx);
+		if (images.size() >= MAX_QUEUE_SIZE)
+		{
+			images.pop_front();
+		}
+		images.push_back(imageWithInfo);
+	}
+	cond.notify_one();
+}
+
+void Experiment::signalImageByPoints(cv::Mat& image, std::vector<cv::Point>& pts, int color)
+{
+	cv::Scalar scalar;
+	switch (color)
+	{
+	case 0:
+	{
+		scalar = cv::Scalar(0, 255, 0);     //绿色
+		break;
+	}
+	case 1:
+	{
+		scalar = cv::Scalar(255, 0, 0);     //蓝色
+		break;
+	}
+	case 2:
+	{
+		scalar = cv::Scalar(0, 0, 255);     //红色
+		break;
+	}
+	default:
+		break;
+	}
+	
+	for (const auto& point : pts) 
+	{
+		cv::circle(image, point, 3, scalar, -1);    
+	}
+}
+
 void Experiment::pvcamTest()
 {
 	while(true)
@@ -211,7 +339,7 @@ void Experiment::pvcamTest()
 			{//等待deque不为空
 				cond_origin.wait(lock);
 			}
-			image = originImages.front();
+			image = originImages.front().first;
 			originImages.pop_front();
 		}
 

@@ -23,6 +23,12 @@
 #include "Parameters.h"
 #include "NematodeProcess.h"
 
+typedef struct OriginInfo
+{
+	uint32_t frameNum;
+	uint32_t timeStamp;
+}originInfo;
+
 class Experiment
 {
 	/*************** 类外部接口 ****************/
@@ -33,6 +39,9 @@ public:
 
 	//类功能启动入口
 	void AutoDo();
+
+	//确认设备都是否启动
+	bool checkDeviceStatus();
 
 	/*
 	* 光电刺激模块功能
@@ -100,6 +109,12 @@ private:
 	//将拍摄的图片放入对应的线程，并发出对应的信号量
 	void pushImageToThread(cv::Mat& image, std::mutex& mtx, std::deque<cv::Mat>& images, std::condition_variable& cond);
 
+	//将拍摄的图片(带信息）放入对应的线程，并发出对应的信号量
+	void pushImageWithInfoToThread(std::pair<cv::Mat, originInfo> imageWithInfo, std::mutex& mtx, std::deque<std::pair<cv::Mat, originInfo>>& images, std::condition_variable& cond);
+
+	//根据点集在图片上进行描点
+	void signalImageByPoints(cv::Mat& image, std::vector<cv::Point>& pts, int color);
+
 public:
 	/*-------------- 仅供测试 ----------------*/
 	void pvcamTest();
@@ -108,11 +123,13 @@ public:
 
 	/************** 类内部成员变量 *************/
 private:
-	std::deque<cv::Mat>  originImages;   //原始图像队列
+	std::deque<std::pair<cv::Mat, originInfo>>  originImages;   //原始图像队列
 	std::deque<cv::Mat>  unprocessedImages;  //未处理的图像 -- PS：该队列在当前版本只取用队尾的图像，也就是最新拍摄的一帧图像。出于处理图像的速度远远小于拍摄图像的速度，后续若考虑对每一帧图像进行处理，可以采用线程池对该队列进行优化处理。
+	std::deque<std::pair<cv::Mat, picInfoPtr>> processedImages;    //处理后图像
 
 	CameraBasePtr  m_Cam;           //Moment相机
 	StageBasePtr   m_Stage;         //Pws位移台
+	NematodeProcessPtr m_np;        //图像处理模块
 	std::thread    m_CamThread;     //拍摄线程
 	std::thread    m_StageThread;   //位移台线程
 	std::thread    m_ProcessThread; //图像处理线程
@@ -121,6 +138,7 @@ private:
 	std::atomic<bool>  process_threadActive; //图像处理线程状态
 	std::mutex     originImage_mtx;          //原始图片加锁
 	std::mutex     unprocessedImage_mtx;     //待处理图片加锁
+	std::mutex     processedImage_mtx;       //已处理图片加锁
 
 	std::condition_variable cond_origin;      //原始图像信号量
 	std::condition_variable cond_unprocessed; //未处理图像信号量
